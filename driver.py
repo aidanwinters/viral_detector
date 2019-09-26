@@ -1,6 +1,7 @@
 import dinucleotide as dn
 
 
+
 def main():
     if(len(sys.argv) <= 1):
         raise NameError('Did not provide a FASTA file argument.')
