@@ -1,7 +1,4 @@
-import dinucleotide as dn
-import sys
 from numpy.random import choice
-import numpy as np
 
 
 def getProportions(seq):

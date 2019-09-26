@@ -90,7 +90,7 @@ class BlastReport(object):
 
 def main():
     query = "random.fna" #this will be the file from dinucleotie program
-    subject = "/Users/student/Desktop/fundone/project/blah" #I hard coded this path so change it to make it work, wilson changed
+    subject = "./dbs/Actino_DB" #I hard coded this path so change it to make it work, wilson changed
     dbt = "nucl"
     outfile = "practice.out" #random ass outfile name
     useblast = Blast(subject,dbt,query,outfile)
@@ -99,5 +99,4 @@ def main():
     blast_results = BlastReport(outfile)
 
 if __name__ == '__main__':
-
     main()
