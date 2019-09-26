@@ -79,12 +79,31 @@ class dinucleotide(object):
 			#Multiply the sum by 1/16
 			window_value = float(1/16) * sigma
 
-			#if window_value > max_delta:
-
+			if window_value > max_delta:
+				self.suspect_sequence = window_seq
 
 			self.deltas.append(window_value)
 
 		return
+
+	
+	def return_suspect_sequence(self):
+		return self.suspect_sequence
+
+	def write_to_fasta(self,outfile):
+
+		"""
+			Output one suspect sequence
+		"""
+		fh = open(outfile,"w")
+
+		header = ">A_Sequence" + "\n"
+		seq = self.suspect_sequence + "\n"
+		fh.write(header)
+		fh.write(seq)
+		fh.close()
+
+		return 
 
 	def get_candidate_viral_seqs(self):
 		pass
@@ -106,7 +125,6 @@ class dinucleotide(object):
 		"""
 			Basic plotting. We can expand on this
 		"""
-
 
 		x_axis = [i*genome_A.skip for i in range(len(genome_A.deltas))]
 		plt.plot(x_axis,genome_A.deltas)
