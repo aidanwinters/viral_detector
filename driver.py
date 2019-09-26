@@ -22,7 +22,15 @@ def main():
     #
     # bacteria1.plot_both(sim)
 
-    h, seq = dn.dinucleotide.parse_fasta(sys.argv[1])
+    # h, seq = dn.dinucleotide.parse_fasta(sys.argv[1])
+    #
+    # props, sim_length = getProportions(seq)
+    #
+    # sim_seq = genSequence(props, sim_length)
+    #
+    # file_name = 'sim.fna'
+
+    create
 
 
     return None
@@ -31,4 +39,3 @@ if __name__ == "__main__":
 	main()
     #Hasan was here
     #wilson hacl
-    
