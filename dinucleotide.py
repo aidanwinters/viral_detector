@@ -30,6 +30,8 @@ class dinucleotide(object):
 		self.global_counts_freqs()
 		self.global_relative_abundance()
 
+		self.suspect_sequence = ""
+
 
 	def global_counts_freqs(self):
 		"""
@@ -55,7 +57,7 @@ class dinucleotide(object):
 
 			Self.deltas will be a list of deltas that we later plot
 		"""
-
+		max_delta = -999
 		for i in range(0,len(self.seq) - self.window_size + 1,self.skip):
 
 			print("Current window ",str(int(i/self.skip)))
@@ -77,21 +79,40 @@ class dinucleotide(object):
 			#Multiply the sum by 1/16
 			window_value = float(1/16) * sigma
 
+			if window_value > max_delta:
+				self.suspect_sequence = window_seq
+
 			self.deltas.append(window_value)
 
 		return
+
+	
+	def return_suspect_sequence(self):
+		return self.suspect_sequence
+
+	def write_to_fasta(self,outfile):
+
+		"""
+			Output one suspect sequence
+		"""
+		fh = open(outfile,"w")
+
+		header = ">A_Sequence" + "\n"
+		seq = self.suspect_sequence + "\n"
+		fh.write(header)
+		fh.write(seq)
+		fh.close()
+
+		return 
+
+	def get_candidate_viral_seqs(self):
+		pass
 
 	def plot_deltas(self):
 		"""
 			Basic plotting. We can expand on this
 		"""
 
-		# print('Freqs:', self.window_size)
-		# print('Seq:', len(self.seq))
-		# temp = np.array(self.deltas).reshape(len(self.seq)/self.window_size, 4**self.k)
-		# df = pd.DataFrame(temp, columns=di_RC.keys())
-		# df.plot()
-		# plt.show()
 
 		x_axis = [i*self.skip for i in range(len(self.deltas))]
 		plt.plot(x_axis,self.deltas)
@@ -99,21 +120,15 @@ class dinucleotide(object):
 		plt.xlabel('Genome position')
 		plt.show()
 
-	def plot_both(self, other_dinuc):
+	@staticmethod
+	def plot_genomes(genome_A, genome_B):
 		"""
 			Basic plotting. We can expand on this
 		"""
 
-		# print('Freqs:', self.window_size)
-		# print('Seq:', len(self.seq))
-		# temp = np.array(self.deltas).reshape(len(self.seq)/self.window_size, 4**self.k)
-		# df = pd.DataFrame(temp, columns=di_RC.keys())
-		# df.plot()
-		# plt.show()
-
-		x_axis = [i*self.skip for i in range(len(self.deltas))]
-		plt.plot(x_axis,self.deltas)
-		plt.plot(x_axis,other_dinuc.deltas)
+		x_axis = [i*genome_A.skip for i in range(len(genome_A.deltas))]
+		plt.plot(x_axis,genome_A.deltas)
+		plt.plot(x_axis,genome_B.deltas)
 		plt.ylabel('Window delta relative abundance')
 		plt.xlabel('Genome position')
 		plt.show()
@@ -182,7 +197,9 @@ class dinucleotide(object):
 def main():
 	bacteria1 = dinucleotide("random.fna")
 	bacteria1.calculate_local_freqs()
-	bacteria1.plot_deltas()
+	#bacteria1.plot_deltas()
+	#
+	dinucleotide.plot_genomes(bacteria1,bacteria2)
 
 if __name__ == "__main__":
 
