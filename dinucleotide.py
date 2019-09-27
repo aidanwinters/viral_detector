@@ -18,12 +18,18 @@ class dinucleotide(object):
              'TG': 'CA', 'CA': 'TG', 'AG': 'CT', 'GT': 'AC', 'GA': 'TC', 'TC': 'GA', 'TA': 'TA', 'AT': 'AT', 'CT': 'AG', 'AC': 'GT'}
     nuc_RC = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
 
-    def __init__(self, fasta_file, window_size=50000, skip=2500):
+    def __init__(self, fasta_file=None, window_size=50000, skip=2500, seq=None):
 
-        self.fasta_file = fasta_file
         self.window_size = window_size
         self.skip = skip
-        self.header, self.seq = dinucleotide.parse_fasta(self.fasta_file)
+
+        if fasta_file != None:
+            self.header, self.seq = dinucleotide.parse_fasta(fasta_file)
+        elif seq != None:
+            self.header = None
+            self.seq = seq
+        else:
+            raise Error('Enter a Fasta file or Sequence string.')
 
         # added y Aidan
         self.k = 2
@@ -94,7 +100,6 @@ class dinucleotide(object):
             if window_value > max_delta:
                 self.suspect_sequence = window_seq
 
-
             self.deltas.append(window_value)
 
         return
@@ -102,7 +107,7 @@ class dinucleotide(object):
     def return_suspect_sequence(self):
         return self.suspect_sequence
 
-    def write_to_fasta(self, outfile):
+    def write_suspect_to_fasta(self, outfile):
         """
                 Output one suspect sequence
         """
@@ -138,17 +143,16 @@ class dinucleotide(object):
             props[s] += 1
 
         for k in props.keys():
-            props[k] = props[k]/len(seq)
+            props[k] = props[k]/len(self.seq)
 
         return list(props.values())
 
     def simulateSequence(self):
         draw = np.random.choice(['A', 'T', 'C', 'G'],
-                                len(self.seq), p=getProportions())
-        self.simulated_seq = ''.join(draw)
-        return 
+                                len(self.seq), p=self.getProportions())
+        seq = "".join(draw)
 
-
+        return seq
 
     @staticmethod
     def plot_genomes(genome_A, genome_B):
@@ -222,7 +226,7 @@ class dinucleotide(object):
 
 def main():
 
-    bacteria1 = dinucleotide("random.fna")
+    bacteria1 = dinucleotide(fasta_file="random.fna")
     bacteria1.calculate_local_freqs()
     bacteria1.plot_deltas()
 
