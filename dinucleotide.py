@@ -1,14 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import tqdm as tq 
 
 
 """
-This module contains the dinucletotie object.
+This module contains the dinucletotie class.
+
+The dinculeotide class contains methods that calculate dinucleotide relative abudances for a given genome. 
+The class also methods for "simulating" genomes and plotting global dinucleotide frequencies.
 
 The dinucleotide object takes 3 arguments: A fasta file, a window size and a skip parameter.
 
-The dinculeotide object contains methods that calculate dinucleotide relative abudances for a genome
 """
 
 
@@ -23,6 +26,7 @@ class dinucleotide(object):
         self.window_size = window_size
         self.skip = skip
 
+        
         if fasta_file != None:
             self.header, self.seq = dinucleotide.parse_fasta(fasta_file)
         elif seq != None:
@@ -66,15 +70,21 @@ class dinucleotide(object):
 
     def calculate_local_freqs(self):
         """
-                This method will loop through the entire sequence skipping by the given skip value (self.skip)
+                
+                This method calculates local dinucleotide frequencies and compares them to their genomes global values by 
+                taking the difference between them. 
 
-                We will calculate the freqs and relative abundance for each window. For each window we will calculate
-                the sum of differences between window values and global values and then append this value to self.deltas
+                Specifically, this method will loop through the entire genome using a slidding window, skipping by some given amount (skip value (self.skip))
 
                 Self.deltas will be a list of deltas that we later plot
+
+                Returns: 
+                	-A list of deltas (distances) that is saved as the class attribute self.deltas
+                	-Keeps track of sequence with the largest delta
         """
         max_delta = -999
-        for i in range(0, len(self.seq) - self.window_size + 1, self.skip):
+        print("Calculating local dinucleotide frequencies")
+        for i in tq.tqdm(range(0, len(self.seq) - self.window_size + 1, self.skip)):
 
             print("Current window ", str(int(i/self.skip)))
 
@@ -91,6 +101,7 @@ class dinucleotide(object):
             # in the window AND the global relative abundance.
             # For example: AA relative abundance(in current window) - AA relative abundance(global)
             # We sum these
+
             for k, v in window_relative_abund.items():
                 sigma += abs(v - self.global_di_abundance[k])
 
@@ -109,7 +120,7 @@ class dinucleotide(object):
 
     def write_suspect_to_fasta(self, outfile):
         """
-                Output one suspect sequence
+                This method writes the suspect sequence to a fasta file. 
         """
         fh = open(outfile, "w")
 
@@ -121,12 +132,9 @@ class dinucleotide(object):
 
         return
 
-    def get_candidate_viral_seqs(self):
-        pass
-
     def plot_deltas(self):
         """
-                Basic plotting. We can expand on this
+                Plots all deltas for the genome
         """
 
         x_axis = [i*self.skip for i in range(len(self.deltas))]
@@ -137,7 +145,12 @@ class dinucleotide(object):
 
     def getProportions(self):
 
-        props = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+    	"""
+			Calculates nucleotides content. This method is used specifically for the simulateSequence method.
+			Also this should just be part global_counts_freqs() because this is MOST DEF redundant 
+    	"""
+    	
+		props = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
 
         for s in self.seq:
             props[s] += 1
@@ -148,6 +161,10 @@ class dinucleotide(object):
         return list(props.values())
 
     def simulateSequence(self):
+    	"""
+			Simulates DNA with specific nucleotide frequencies
+    	"""
+
         draw = np.random.choice(['A', 'T', 'C', 'G'],
                                 len(self.seq), p=self.getProportions())
         seq = "".join(draw)
@@ -157,7 +174,12 @@ class dinucleotide(object):
     @staticmethod
     def plot_genomes(genome_A, genome_B):
         """
-                Basic plotting. We can expand on this
+                Plots deltas for two dinucleotide frequencies. 
+                params: 
+                	-genome_A: an instance of dinucleotide
+                	-genome_B: another instance of dinucleotide
+
+                returns: matplotliv figure
         """
 
         x_axis = [i*genome_A.skip for i in range(len(genome_A.deltas))]
@@ -168,11 +190,24 @@ class dinucleotide(object):
         plt.show()
 
     @staticmethod
-    def Calc_frequencies(sequence, size):
+    def Calc_frequencies(sequence, size=2):
+    	"""
+			Given a sequence and a size (kmer length), calculate the frequencies of kmers of length "size" ()
+
+			Params:
+				-sequence: A string
+				-size: An int
+    	"""
 
         di_counts, nuc_counts = dict(), dict()
 
+
+        #loop through sequence using a incredibly sophisticated sliding window approach 
         for i in range(len(sequence) - size + 1):
+        	"""
+				We are accounting for the double stranded nature of DNA, although this shouldnt matter. 
+
+        	"""
             forward_mer = sequence[i:i+size]  # AA
             reverse_mer = dinucleotide.di_RC[forward_mer]  # TT
 
@@ -199,6 +234,14 @@ class dinucleotide(object):
 
     @staticmethod
     def calc_DN_relative_abund(nuc_freq, di_freq):
+
+    	"""
+    		Calculate dinucleotide relative abundance.
+
+    		Params:
+    			-nuc_freq: A dictionary containing frequencies for individual nucleotides
+    			-di_freq: A dictionary containing frequencies of all dinucleotides
+    	"""
 
         return {k: v/(nuc_freq[k[0]] * nuc_freq[k[1]]) for k, v in di_freq.items()}
 
