@@ -3,6 +3,15 @@ import numpy as np
 import pandas as pd
 
 
+"""
+This module contains the dinucletotie object.
+
+The dinucleotide object takes 3 arguments: A fasta file, a window size and a skip parameter.
+
+The dinculeotide object contains methods that calculate dinucleotide relative abudances for a genome
+"""
+
+
 class dinucleotide(object):
 
     di_RC = {'CG': 'CG', 'GC': 'GC', 'CC': 'GG', 'GG': 'CC', 'TT': 'AA', 'AA': 'TT',
@@ -84,6 +93,7 @@ class dinucleotide(object):
 
             if window_value > max_delta:
                 self.suspect_sequence = window_seq
+
 
             self.deltas.append(window_value)
 
@@ -213,13 +223,11 @@ class dinucleotide(object):
 
 
 def main():
+
     bacteria1 = dinucleotide("random.fna")
     bacteria1.calculate_local_freqs()
-    # bacteria1.plot_deltas()
-    #
-    dinucleotide.plot_genomes(bacteria1, bacteria2)
+    bacteria1.plot_deltas()
 
 
 if __name__ == "__main__":
-
     main()
