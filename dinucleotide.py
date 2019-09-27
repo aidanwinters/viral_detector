@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
+import string
 import tqdm as tq
 
 
@@ -26,6 +27,8 @@ class dinucleotide(object):
 
         self.window_size = window_size
         self.skip = skip
+        self.header = None
+        self.seq = None
 
 
         if fasta_file != None:
@@ -36,7 +39,9 @@ class dinucleotide(object):
         else:
             raise Error('Enter a Fasta file or Sequence string.')
 
-        # added y Aidan
+
+        self.length = len(self.seq)
+        # added by Aidan
         self.k = 2
 
         self.deltas = []
@@ -115,60 +120,60 @@ class dinucleotide(object):
             if window_value > max_delta:
                 self.suspect_sequence = window_seq
 
-            self.peaks[(i,i + self.window_size)] = window_value
+            self.peaks[(i, i + self.window_size)] = window_value
             self.deltas.append(window_value)
 
         return
 
     def return_suspect_sequence(self):
         return self.suspect_sequence
-    
-    def grab_top_peaks(self,top_n):
-    	"""
-			Sorts self.peaks and then reassigns it to only include top 5 deltas
 
-            Params: 
+    def grab_top_peaks(self, top_n):
+        """
+                        Sorts self.peaks and then reassigns it to only include top 5 deltas
+
+            Params:
                 -top_n: number of top deltas to return (int)
 
-            returns: updates self.peaks to only include top peaks! This is sloppy but like its ok 
+            returns: updates self.peaks to only include top peaks! This is sloppy but like its ok
             because we just need to breathe and take this one step at a time
-    	"""
-        newA = dict(sorted(self.peaks.items(), key=operator.itemgetter(1), reverse=True)[:top_n])   	
-        
+        """
+        newA = dict(sorted(self.peaks.items(),
+                           key=operator.itemgetter(1), reverse=True)[:top_n])
+
         #self.peaks = newA
         return newA
 
-
-    def write_suspect_to_fasta(self, outfile,top_n_peaks=0):
+    def write_suspect_to_fasta(self, outfile, top_n_peaks=0):
         """
-                This method creates a fasta file that contains sequences associated with the top peaks. 
-                Default behavior writes sequence associated with largest peak. 
+                This method creates a fasta file that contains sequences associated with the top peaks.
+                Default behavior writes sequence associated with largest peak.
                 Params:
-                	-outfile
-                	-top_5_peaks: take on boolean value (Default is False)
+                        -outfile
+                        -top_5_peaks: take on boolean value (Default is False)
 
                 Returns: Fasta file is created
         """
-        
+
         if top_n_peaks > 0:
 
             newA = self.grab_top_peaks(top_n_peaks)
 
-        	seq = []
-        	for k,v in newA.items():
-        		seq.append(self.seq[k[0]:k[1]])
+            seq = []
+            for k, v in newA.items():
+                    seq.append(self.seq[k[0]:k[1]])
 
         else:
-        	seq = [self.suspect_sequence]
+            seq = [self.suspect_sequence]
 
         fh = open(outfile, "w")
 
         for temp_seq in seq:
-        	header = dinucleotide.random_generator(6) + "\n"
-        	temp = temp_seq+ "\n"
-        	fh.write(header)
-        	fh.write(temp)
-        
+            header = dinucleotide.random_generator(6) + "\n"
+            temp = temp_seq + "\n"
+            fh.write(header)
+            fh.write(temp)
+
         fh.close()
 
         return
@@ -264,7 +269,7 @@ class dinucleotide(object):
 
     def plot_compare_distribution(genome_A, genome_B):
         """
-            Plot 
+            Plot
         """
 
         plt.hist(genome_A.deltas, bins=100, alpha=0.5)
@@ -328,7 +333,7 @@ class dinucleotide(object):
     def parse_fasta(file_name):
         """
                 This function takes in a fasta file and returns its header
-                and sequence. If fasta files contains several chromsomes than 
+                and sequence. If fasta files contains several chromsomes than
                 the sequenes will be concatenated.
 
                 Prams
@@ -337,27 +342,24 @@ class dinucleotide(object):
         seq = ""
         headers = []
 
-        
         with open(file_name) as fh:
             for line in fh:
                 if(line[0] != '>'):
                     seq += line.strip()
                 else:
                     headers.append(line.strip())
-        
-        self.length = len(seq)
         return headers, seq
 
     @staticmethod
     def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    	return ''.join(random.choice(chars) for x in range(size))
+        return ''.join(random.choice(chars) for x in range(size))
 
     def __str__(self):
         """
         Special method that return the string representation of this class
 
         """
-        return "This dinucleotide instance uses the file {} and contains a sequence of length {} ".format(self.fasta_file,str(self.length))
+        return "This dinucleotide instance uses the file {} and contains a sequence of length {} ".format(self.fasta_file, str(self.length))
         pass
 
 

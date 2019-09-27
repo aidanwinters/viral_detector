@@ -1,1 +1,0 @@
-75d2b78bb53ed8c8bd33978bb5c0e640  GCF_000008865.2_ASM886v2_genomic.gff.gz
