@@ -82,6 +82,7 @@ class dinucleotide(object):
                 	-A list of deltas (distances) that is saved as the class attribute self.deltas
                 	-Keeps track of sequence with the largest delta
         """
+
         max_delta = -999
         print("Calculating local dinucleotide frequencies")
         for i in tq.tqdm(range(0, len(self.seq) - self.window_size + 1, self.skip)):
@@ -149,7 +150,7 @@ class dinucleotide(object):
 			Calculates nucleotides content. This method is used specifically for the simulateSequence method.
 			Also this should just be part global_counts_freqs() because this is MOST DEF redundant 
     	"""
-    	
+
 		props = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
 
         for s in self.seq:
@@ -191,6 +192,7 @@ class dinucleotide(object):
 
     @staticmethod
     def Calc_frequencies(sequence, size=2):
+    	
     	"""
 			Given a sequence and a size (kmer length), calculate the frequencies of kmers of length "size" ()
 
