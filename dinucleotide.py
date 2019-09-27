@@ -14,8 +14,6 @@ The class also methods for "simulating" genomes and plotting global dinucleotide
 
 The dinucleotide object takes 3 arguments: A fasta file, a window size and a skip parameter.
 
-This class contains several
-
 """
 
 
@@ -32,7 +30,6 @@ class dinucleotide(object):
         self.header = None
         self.seq = None
 
-
         if fasta_file != None:
             self.header, self.seq = dinucleotide.parse_fasta(fasta_file)
         elif seq != None:
@@ -40,7 +37,6 @@ class dinucleotide(object):
             self.seq = seq
         else:
             raise Error('Enter a Fasta file or Sequence string.')
-
 
         self.length = len(self.seq)
         # added by Aidan
@@ -62,8 +58,7 @@ class dinucleotide(object):
         self.peaks = {}
 
     def global_counts_freqs(self):
-        """
-                Calculate GLOBAL nucleotide and dinucleotide frequencies.
+        """Calculate GLOBAL nucleotide and dinucleotide frequencies.
         """
 
         self.global_nuc_freqs, self.global_di_freqs = dinucleotide.Calc_frequencies(
@@ -163,7 +158,7 @@ class dinucleotide(object):
 
             seq = []
             for k, v in newA.items():
-                    seq.append(self.seq[k[0]:k[1]])
+                seq.append(self.seq[k[0]:k[1]])
 
         else:
             seq = [self.suspect_sequence]
