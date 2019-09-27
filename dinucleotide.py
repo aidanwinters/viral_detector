@@ -123,17 +123,23 @@ class dinucleotide(object):
     def return_suspect_sequence(self):
         return self.suspect_sequence
     
-    def grab_top_peaks(self):
+    def grab_top_peaks(self,top_n):
     	"""
 			Sorts self.peaks and then reassigns it to only include top 5 deltas
+
+            Params: 
+                -top_n: number of top deltas to return (int)
+
+            returns: updates self.peaks to only include top peaks! This is sloppy but like its ok 
+            because we just need to breathe and take this one step at a time
     	"""
-        newA = dict(sorted(self.peaks.items(), key=operator.itemgetter(1), reverse=True)[:5])   	
+        newA = dict(sorted(self.peaks.items(), key=operator.itemgetter(1), reverse=True)[:top_n])   	
         
-        self.peaks = newA
-        return 
+        #self.peaks = newA
+        return newA
 
 
-    def write_suspect_to_fasta(self, outfile,top_5_peaks=False):
+    def write_suspect_to_fasta(self, outfile,top_n_peaks=0):
         """
                 This method creates a fasta file that contains sequences associated with the top peaks. 
                 Default behavior writes sequence associated with largest peak. 
@@ -144,9 +150,12 @@ class dinucleotide(object):
                 Returns: Fasta file is created
         """
         
-        if top_5_peaks:
+        if top_n_peaks > 0:
+
+            newA = self.grab_top_peaks(top_n_peaks)
+
         	seq = []
-        	for k,v in self.peaks.items():
+        	for k,v in newA.items():
         		seq.append(self.seq[k[0]:k[1]])
 
         else:
@@ -255,7 +264,7 @@ class dinucleotide(object):
 
     def plot_compare_distribution(genome_A, genome_B):
         """
-
+            Plot 
         """
 
         plt.hist(genome_A.deltas, bins=100, alpha=0.5)
@@ -316,23 +325,27 @@ class dinucleotide(object):
         return {k: v/(nuc_freq[k[0]] * nuc_freq[k[1]]) for k, v in di_freq.items()}
 
     @staticmethod
-    def parse_fasta(file_name, concat=True):
+    def parse_fasta(file_name):
         """
                 This function takes in a fasta file and returns its header
-                and sequence. If file contains several
+                and sequence. If fasta files contains several chromsomes than 
+                the sequenes will be concatenated.
+
+                Prams
+
         """
         seq = ""
         headers = []
 
-        if concat:
-
-
-            with open(file_name) as fh:
-                for line in fh:
-                    if(line[0] != '>'):
-                        seq += line.strip()
-                    else:
-                        headers.append(line.strip())
+        
+        with open(file_name) as fh:
+            for line in fh:
+                if(line[0] != '>'):
+                    seq += line.strip()
+                else:
+                    headers.append(line.strip())
+        
+        self.length = len(seq)
         return headers, seq
 
     @staticmethod
@@ -341,9 +354,10 @@ class dinucleotide(object):
 
     def __str__(self):
         """
-        I feel like I want to flush this out
+        Special method that return the string representation of this class
 
         """
+        return "This dinucleotide instance uses the file {} and contains a sequence of length {} ".format(self.fasta_file,str(self.length))
         pass
 
 
