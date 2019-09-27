@@ -148,9 +148,6 @@ class dinucleotide(object):
         self.simulated_seq = ''.join(draw)
         return self.simulated_seq
 
-    def getSimDeltas(self):
-        self.calculate_local_freqs(seq=self.simulated_seq)
-        pass
 
     @staticmethod
     def plot_genomes(genome_A, genome_B):
