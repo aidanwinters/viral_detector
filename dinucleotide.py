@@ -13,6 +13,8 @@ The class also methods for "simulating" genomes and plotting global dinucleotide
 
 The dinucleotide object takes 3 arguments: A fasta file, a window size and a skip parameter.
 
+This class contains several 
+
 """
 
 
@@ -358,7 +360,6 @@ class dinucleotide(object):
 
         """
         return "This dinucleotide instance uses the file {} and contains a sequence of length {} ".format(self.fasta_file,str(self.length))
-        pass
 
 
 def main():
