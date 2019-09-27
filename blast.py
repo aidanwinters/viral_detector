@@ -96,7 +96,7 @@ def main():
     useblast = Blast(subject,dbt,query,outfile)
     useblast.makedb()
     useblast.blast()
-    blast_results = BlastReport(outfile)
+    blast_results = BlastReport()
 
 if __name__ == '__main__':
     main()
