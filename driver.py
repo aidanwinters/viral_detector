@@ -30,8 +30,11 @@ def main():
     #
     # file_name = 'sim.fna'
 
-    create
+    bacteria1 = dn.dinucleotide(sys.argv[1])
+    bacteria1.calculate_local_freqs()
+    bacteria1.plot_deltas()
 
+    # bacteria1.simulateSequence()
 
     return None
 
