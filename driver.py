@@ -19,8 +19,8 @@ def main():
     sim_genome = dn.dinucleotide(seq=fake_seq)
     sim_genome.calculate_local_freqs()
 
-    # dn.dinucleotide.plot_compare_genome(bacteria1, sim_genome)
-    # dn.dinucleotide.plot_compare_distribution(bacteria1, sim_genome)
+    dn.dinucleotide.plot_compare_genome(bacteria1, sim_genome)
+    dn.dinucleotide.plot_compare_distribution(bacteria1, sim_genome)
 
     #blast section
 
