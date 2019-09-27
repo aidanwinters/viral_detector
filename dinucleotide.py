@@ -146,7 +146,8 @@ class dinucleotide(object):
         draw = np.random.choice(['A', 'T', 'C', 'G'],
                                 len(self.seq), p=getProportions())
         self.simulated_seq = ''.join(draw)
-        return self.simulated_seq
+        return 
+
 
 
     @staticmethod
