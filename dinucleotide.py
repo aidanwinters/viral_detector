@@ -26,6 +26,7 @@ class dinucleotide(object):
         self.window_size = window_size
         self.skip = skip
 
+
         if fasta_file != None:
             self.header, self.seq = dinucleotide.parse_fasta(fasta_file)
         elif seq != None:
@@ -143,6 +144,39 @@ class dinucleotide(object):
         plt.xlabel('Genome position')
         plt.show()
 
+    def plot_deltas_wAnnotation(self, gff_file, annot="phage"):
+        """
+                Plots all deltas for the genome with annotated regions
+        """
+
+        roi = []
+
+        with open(gff_file, 'r') as gff:
+            for line in gff:
+                if annot in line:
+                    split = line.split('\t', 5)
+                    roi.append((int(split[3]), int(split[4])))
+
+        x_axis = [i * self.skip for i in range(len(self.deltas))]
+        plt.plot(x_axis, self.deltas)
+
+        for r in roi:
+            plt.axvspan(r[0], r[1], color='red', alpha=0.25)
+
+        plt.ylabel('Window delta relative abundance')
+        plt.xlabel('Genome position')
+        plt.legend()
+        plt.show()
+
+    def plot_distribution(self):
+        """
+                Plots the distribution of deltas
+        """
+
+        plt.hist(self.deltas, bins=100, alpha=0.5, label='x')
+        # plt.hist(y, bins, alpha=0.5, label='y')
+        plt.show()
+
     def getProportions(self):
         """
         Calculates nucleotides content. This method is used specifically for the simulateSequence method.
@@ -171,7 +205,7 @@ class dinucleotide(object):
         return seq
 
     @staticmethod
-    def plot_genomes(genome_A, genome_B):
+    def plot_compare_genome(genome_A, genome_B):
         """
                 Plots deltas for two dinucleotide frequencies.
                 params:
@@ -186,6 +220,15 @@ class dinucleotide(object):
         plt.plot(x_axis, genome_B.deltas)
         plt.ylabel('Window delta relative abundance')
         plt.xlabel('Genome position')
+        plt.show()
+
+    def plot_compare_distribution(genome_A, genome_B):
+        """
+
+        """
+
+        plt.hist(genome_A.deltas, bins=100, alpha=0.5)
+        plt.hist(genome_B.deltas, bins=100, alpha=0.5)
         plt.show()
 
     @staticmethod
